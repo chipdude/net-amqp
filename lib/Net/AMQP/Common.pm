@@ -205,7 +205,10 @@ sub pack_field_array {
 
 sub _pack_field_value {
     my ($value) = @_;
-    if (not ref $value) {
+    if (not defined $value) {
+        'V'
+    }
+    elsif (not ref $value) {
         if ($value =~ /^-?\d+\z/) {
             'I' . pack_long_integer($value);
         } else {
@@ -231,6 +234,7 @@ sub _pack_field_value {
 }
 
 my %_unpack_field_types = (
+    V => sub { undef },
     S => \&unpack_long_string,
     I => \&unpack_long_integer,
     D => sub {

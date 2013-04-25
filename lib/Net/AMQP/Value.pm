@@ -35,29 +35,34 @@ use strict;
 use Net::AMQP::Common ();
 
 package Net::AMQP::Value;
-sub new {
-    bless [ $_[1] ], $_[0]
-};
+use overload '""'  => sub { shift->[0] },
+             'cmp' => sub { ($_[0][0] cmp $_[1]) * ($_[2] ? -1 : 1) },
+             '<=>' => sub { ($_[0][0] <=> $_[1]) * ($_[2] ? -1 : 1) };
+sub new { bless [ $_[1] ], $_[0] }
 
 package Net::AMQP::Value::String;
 use base qw( Net::AMQP::Value );
-use overload '""'  => sub { shift->[0] };
 sub field_packed { 'S' . Net::AMQP::Common::pack_long_string(shift->[0]) }
 
 package Net::AMQP::Value::Integer;
 use base qw( Net::AMQP::Value );
-use overload '0+'  => sub { int(shift->[0]) };
+use overload '0+'  => sub { shift->[0] };
+sub new { bless [ defined($_[1]) ? int($_[1]) : 0 ], $_[0] }
 sub field_packed { 'I' . Net::AMQP::Common::pack_long_integer(shift->[0]) }
 
 package Net::AMQP::Value::Timestamp;
-use base qw( Net::AMQP::Value );
-use overload '0+'  => sub { int(shift->[0]) };
+use base qw( Net::AMQP::Value::Integer );  # unsigned, but ok
 sub field_packed { 'T' . Net::AMQP::Common::pack_timestamp(shift->[0]) }
 
 package Net::AMQP::Value::Boolean;
 use base qw( Net::AMQP::Value );
-use overload bool  => sub { shift->[0] ? 1 : 0 },
-             '""'  => sub { shift->[0] ? 'true' : 'false' };
+sub _num { shift->[0] }
+sub _str { shift->[0] ? 'true' : 'false' };
+use overload bool  => \&_num,
+             '0+'  => \&_num,
+             '""'  => \&_str,
+             'cmp' => sub { (_str($_[0]) cmp $_[1]) * ($_[2] ? -1 : 1) };
+sub new { bless [ $_[1] ? 1 : 0 ], $_[0] }
 sub field_packed { 't' . Net::AMQP::Common::pack_boolean(shift->[0]) }
 
 package Net::AMQP::Value;
