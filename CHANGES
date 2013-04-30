@@ -1,3 +1,6 @@
+0.0503  Mon Apr 29 19:50:38 PDT 2013
+    - Improve Net::AMQP::Value::* overloading and testing thereof.
+
 0.0502  Thu Apr 25 02:00:09 PDT 2013
     - Require Perl 5.006 to get pack 'q' for quads.  C'mon, it's been over a decade now.
     - Support packing and unpacking of full range of signed and unsigned integer values,
