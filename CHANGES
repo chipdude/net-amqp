@@ -1,3 +1,8 @@
+0.07  <tbd>
+    - Fix test errors on 32-bit machines; while they can't handle timestamps and 64-bit
+      ints, they can still be useflu.  Support for 64-bit ints that fit into the mantissa
+      of an NV (usually 52 significant bits) could be added in future.
+
 0.06  Wed May  1 19:37:50 PDT 2013
     - Require Perl 5.006 to get pack 'q' for quads.  C'mon, it's been over a decade now.
     - Support packing and unpacking of full range of signed and unsigned integer values,
